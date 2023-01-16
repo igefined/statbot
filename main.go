@@ -3,8 +3,7 @@ package main
 import (
 	"context"
 
-	"go.uber.org/fx"
-
+	"github.com/igilgyrg/statbot/api/bots/telegram"
 	"github.com/igilgyrg/statbot/api/clients/coin"
 	"github.com/igilgyrg/statbot/internal/currency"
 	"github.com/igilgyrg/statbot/internal/storage/binary"
@@ -22,9 +21,7 @@ func main() {
 
 	service := currency.NewService(repository, client)
 
-	application := fx.New(
-		fx.Supply(ctx, client, repository, service),
-	)
+	telegramClient := telegram.NewBot(service)
 
-	application.Run()
+	telegramClient.Run(ctx)
 }
