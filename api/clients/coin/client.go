@@ -5,15 +5,31 @@ import (
 	"log"
 	"net/http"
 	"time"
+
+	"github.com/heetch/confita"
+	"github.com/heetch/confita/backend/env"
 )
 
-type Config struct {
-	ApiKey   string `config:"COIN_API_KEY,required"`
-	Endpoint string `config:"COIN_ENDPOINT"`
-}
+type (
+	Rates struct {
+		Time         string  `json:"time"`
+		AssetIdBase  string  `json:"asset_id_base"`
+		AssetIdQuote string  `json:"asset_id_quote"`
+		Rate         float64 `json:"rate"`
+	}
+
+	Error struct {
+		Message string `json:"error"`
+	}
+
+	Config struct {
+		ApiKey   string `config:"COIN_API_KEY,required"`
+		Endpoint string `config:"COIN_ENDPOINT"`
+	}
+)
 
 type Client interface {
-	ExchangeRate(ctx context.Context, assetBase string, assetQuote string) error
+	ExchangeRate(ctx context.Context, assetBase string, assetQuote string) (float64, error)
 }
 
 type client struct {
@@ -25,7 +41,7 @@ const (
 	defaultEndpoint = "https://rest.coinapi.io"
 )
 
-func New() Client {
+func NewClient() Client {
 	cfg := Config{
 		// ApiKey
 		Endpoint: defaultEndpoint,
