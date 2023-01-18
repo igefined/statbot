@@ -3,3 +3,4 @@
 bin/
 store.json
 bots.pem
+entrypoint.sh
