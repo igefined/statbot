@@ -8,7 +8,7 @@ import (
 )
 
 func (r repository) List(ctx context.Context) (list []storage.Deposit, err error) {
-	err = pgxscan.Select(ctx, r.qb.Querier(), &list, "select * from coins_stats order by count desc/")
+	err = pgxscan.Select(ctx, r.qb.Querier(), &list, "select * from coins_stats order by count desc")
 
 	return
 }
