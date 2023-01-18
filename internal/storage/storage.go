@@ -3,9 +3,10 @@ package storage
 import "context"
 
 type Deposit struct {
-	Symbol        string  `json:"symbol"`
-	Count         float64 `json:"count"`
-	PurchasePrice float64 `json:"purchase_price"`
+	Id            int64   `json:"id" db:"id"`
+	Symbol        string  `json:"symbol" db:"symbol"`
+	Count         float64 `json:"count" db:"count"`
+	PurchasePrice float64 `json:"purchase_price" db:"purchase_price"`
 }
 
 type Storage interface {
