@@ -157,6 +157,8 @@ func (c *Client) saveQueHandler(ctx context.Context, que *SaveQue, update tgbota
 				log.Printf("error save currency token %v", err)
 				que.Message = "currency is not supported"
 			}
+
+			que.Message = "internal bot error"
 		}
 
 		que.clean()
