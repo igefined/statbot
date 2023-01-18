@@ -3,6 +3,7 @@ module github.com/igilgyrg/statbot
 go 1.19
 
 require (
+	github.com/georgysavva/scany/v2 v2.0.0
 	github.com/go-telegram-bot-api/telegram-bot-api/v5 v5.5.1
 	github.com/golang-migrate/migrate/v4 v4.15.2
 	github.com/heetch/confita v0.10.0
@@ -10,7 +11,6 @@ require (
 )
 
 require (
-	github.com/georgysavva/scany/v2 v2.0.0 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
