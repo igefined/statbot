@@ -169,14 +169,10 @@ func (c *Client) saveQueHandler(ctx context.Context, que *SaveQue, update tgbota
 
 func ToMessage(c model.Capital) string {
 	message := ""
-	capitalPrice := 0.0
 
 	for k, v := range c {
 		message += fmt.Sprintf("<strong>%s</strong>\ncount: %f\npurchase price: %f\nactual price: %f\ndifference in percent: %f%%\n\n", k, v.Count, v.PurchasePrice, v.ActualPrice, v.Difference)
-		capitalPrice += v.ActualPrice * v.Count
 	}
-
-	message += fmt.Sprintf("\nTotal capital: %d", capitalPrice)
 
 	return message
 }
