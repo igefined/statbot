@@ -3,8 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"log"
-
 	"github.com/heetch/confita"
 	"github.com/heetch/confita/backend/env"
 	"github.com/igilgyrg/statbot/api/bots/telegram"
@@ -12,6 +10,7 @@ import (
 	"github.com/igilgyrg/statbot/internal/currency"
 	"github.com/igilgyrg/statbot/internal/storage/supabase"
 	"github.com/igilgyrg/statbot/schema"
+	"log"
 )
 
 type DBConfig struct {
@@ -31,7 +30,7 @@ func main() {
 	}
 
 	if err := confita.NewLoader(env.NewBackend()).Load(ctx, &cfg); err != nil {
-		log.Fatalf("sendsay: failed to load config: %s", err)
+		log.Fatalf("statbot: failed to load config: %s", err)
 	}
 
 	url := fmt.Sprintf("postgres://%s:%s@%s:%d/%s", cfg.Username, cfg.Password, cfg.Host, cfg.Port, cfg.DBName)
