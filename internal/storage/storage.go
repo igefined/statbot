@@ -12,4 +12,8 @@ type Deposit struct {
 type Storage interface {
 	List(ctx context.Context) ([]Deposit, error)
 	Save(ctx context.Context, asset Deposit) error
+	GetBySymbol(ctx context.Context, symbol string) ([]Deposit, error)
+	Delete(ctx context.Context, id int64) error
+	DeleteAllByIds(ctx context.Context, ids []int64) error
+	Update(ctx context.Context, asset *Deposit) error
 }

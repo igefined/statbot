@@ -19,7 +19,7 @@ type (
 		Difference    float64 `json:"difference"` // percent
 	}
 
-	DepositSave struct {
+	DepositPatch struct {
 		Symbol        string
 		Count         float64
 		PurchasePrice float64

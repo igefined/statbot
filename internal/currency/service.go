@@ -10,7 +10,8 @@ import (
 
 type Service interface {
 	Report(ctx context.Context) (model.Capital, error)
-	Save(ctx context.Context, save *model.DepositSave) error
+	Save(ctx context.Context, save *model.DepositPatch) error
+	Sell(ctx context.Context, deposit *model.DepositPatch) error
 }
 
 type service struct {

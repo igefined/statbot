@@ -8,7 +8,7 @@ import (
 	"github.com/igilgyrg/statbot/model"
 )
 
-func (s service) Save(ctx context.Context, save *model.DepositSave) error {
+func (s service) Save(ctx context.Context, save *model.DepositPatch) error {
 	save.Symbol = strings.ToUpper(save.Symbol)
 	rate, err := s.client.ExchangeRate(ctx, save.Symbol, "USDT")
 	if err != nil || rate == 0.0 {

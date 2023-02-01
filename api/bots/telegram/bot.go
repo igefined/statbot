@@ -5,7 +5,9 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"math"
 	"strconv"
+	"strings"
 	"time"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
@@ -27,7 +29,14 @@ type (
 		PreviousMessageId int
 		Step              int8
 		Message           string
-		model.DepositSave
+		model.DepositPatch
+	}
+
+	DeleteQue struct {
+		PreviousMessageId int
+		Step              int8
+		Message           string
+		model.DepositPatch
 	}
 
 	Config struct {
@@ -36,6 +45,11 @@ type (
 )
 
 var saveQue = SaveQue{
+	PreviousMessageId: 0,
+	Step:              0,
+}
+
+var deleteQue = DeleteQue{
 	PreviousMessageId: 0,
 	Step:              0,
 }
@@ -112,6 +126,11 @@ func (c *Client) commandHandler(ctx context.Context, update tgbotapi.Update) {
 		saveQue.PreviousMessageId = update.Message.MessageID
 		saveQue.Step += 1
 		c.api.Send(msg)
+	case "/delete":
+		msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Enter a symbol:")
+		deleteQue.PreviousMessageId = update.Message.MessageID
+		deleteQue.Step += 1
+		c.api.Send(msg)
 	default:
 		msg := tgbotapi.NewMessage(update.Message.Chat.ID, "This bot helps @lali_lollipup keep track of the investment wallet")
 		c.api.Send(msg)
@@ -123,6 +142,11 @@ func (c *Client) textMessageHandler(ctx context.Context, update tgbotapi.Update)
 	if update.Message.MessageID-2 == saveQue.PreviousMessageId {
 		c.saveQueHandler(ctx, &saveQue, update)
 		messageString = saveQue.Message
+	}
+
+	if update.Message.MessageID-2 == deleteQue.PreviousMessageId {
+		c.deleteQueHandler(ctx, &deleteQue, update)
+		messageString = deleteQue.Message
 	}
 
 	msg := tgbotapi.NewMessage(update.Message.Chat.ID, messageString)
@@ -151,11 +175,45 @@ func (c *Client) saveQueHandler(ctx context.Context, que *SaveQue, update tgbota
 		que.PurchasePrice = price
 		que.Message = fmt.Sprintf("%s saved!", que.Symbol)
 
-		err := c.service.Save(ctx, &que.DepositSave)
+		err := c.service.Save(ctx, &que.DepositPatch)
 		if err != nil {
 			if errors.Is(err, model.ErrCoinNotFound) {
 				log.Printf("error save currency token %v", err)
 				que.Message = "currency is not supported"
+			}
+
+			que.Message = "internal bot error"
+		}
+
+		que.clean()
+
+		return
+	}
+}
+
+func (c *Client) deleteQueHandler(ctx context.Context, que *DeleteQue, update tgbotapi.Update) {
+	switch que.Step {
+	case 1:
+		que.Step += 1
+		que.Symbol = update.Message.Text
+		que.PreviousMessageId = update.Message.MessageID
+		que.Message = fmt.Sprintf("Enter count of %s", que.Symbol)
+		return
+	case 2:
+		que.Step += 1
+		if strings.Trim(update.Message.Text, " ") == "all" {
+			que.Count = math.MaxFloat64
+		} else {
+			count, _ := strconv.ParseFloat(update.Message.Text, 64)
+			que.Count = count
+		}
+		que.PreviousMessageId = update.Message.MessageID
+		que.Message = fmt.Sprintf("%s successfulyy sold", que.Symbol)
+		err := c.service.Sell(ctx, &que.DepositPatch)
+		if err != nil {
+			if errors.Is(err, model.ErrCoinNotFound) {
+				log.Printf("error save currency token %v", err)
+				que.Message = "currency has not sold"
 			}
 
 			que.Message = "internal bot error"
@@ -179,6 +237,11 @@ func ToMessage(c model.Capital) string {
 	message += fmt.Sprintf("\nSum: %f", sum)
 
 	return message
+}
+
+func (q *DeleteQue) clean() {
+	q.Step = 0
+	q.PreviousMessageId = 0
 }
 
 func (q *SaveQue) clean() {
