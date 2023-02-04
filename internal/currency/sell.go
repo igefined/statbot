@@ -2,6 +2,7 @@ package currency
 
 import (
 	"context"
+
 	"github.com/igilgyrg/statbot/internal/storage"
 	"github.com/igilgyrg/statbot/model"
 )
@@ -30,7 +31,7 @@ func (s service) Sell(ctx context.Context, deposit *model.DepositPatch) (err err
 			return
 		}
 
-		err = s.storage.Save(ctx, storage.Deposit{Symbol: deposit.Symbol, Count: sumCount, PurchasePrice: averagePrice})
+		err = s.storage.Save(ctx, storage.Deposit{Symbol: deposit.Symbol, Count: sumCount - deposit.Count, PurchasePrice: averagePrice})
 
 		return
 	}
